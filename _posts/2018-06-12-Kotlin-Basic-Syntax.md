@@ -48,12 +48,12 @@ fun printSum(a: Int, b: Int) {
 
 ###변수 정의
 Assign-once(읽기 전용) 지역변수
-```Kotlin
+{% highlight kotlin %}
 val a; Int = 1 //값과 함께 선언
 val b = 2      //Int 타입 정의안함
 val c: Int     //값을 초기화 하지않고 타입만 선언
 c = 3
-```
+{% endhighlight %}
 
 Mutable 변수
 ```Kotlin
