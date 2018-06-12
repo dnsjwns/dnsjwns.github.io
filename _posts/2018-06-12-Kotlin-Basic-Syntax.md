@@ -1,6 +1,6 @@
 ---
 title: Kotlin 기본문법
-layout: post
+layout: posts
 tags: Kotlin, Andorid
 categories: Android
 ---
