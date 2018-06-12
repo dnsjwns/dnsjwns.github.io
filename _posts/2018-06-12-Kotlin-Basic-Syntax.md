@@ -20,11 +20,11 @@ import java.util.*
 
 ###함수 정의
 아래 함수는 두개의 `Int` 파라메터와 `Int` 리턴타입을 가진다.
-```Kotlin
+~~~~~~Kotlin
 fun sum(a: Int, b: Int): Int{
     ;return a + b
 }
-```
+~~~~~~
 
 리턴타입에 정의된 함수.
 ```Kotlin
