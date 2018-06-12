@@ -15,3 +15,7 @@ import java.util.*
 
 //...
 ```
+해당 디렉터리나 패키지가 옳바르게 맞지 않을경우 소스파일에서 임의로 대체한다.
+[Packages](https://kotlinlang.org/docs/reference/packages.html)
+
+###함수 정의
