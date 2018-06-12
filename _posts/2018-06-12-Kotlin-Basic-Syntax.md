@@ -5,7 +5,9 @@ tags: Kotlin, Andorid
 categories: Android
 ---
 
-# Kotlin 기본문법
+
+
+---
 
 ### 패키지 정의
 
@@ -20,6 +22,8 @@ import java.util.*
 ```
 해당 디렉터리나 패키지가 옳바르게 맞지 않을경우 소스파일에서 임의로 대체한다.
 [Packages](https://kotlinlang.org/docs/reference/packages.html)
+
+---
 
 ### 함수 정의
 
@@ -51,6 +55,8 @@ fun printSum(a: Int, b: Int) {
 ```
 [Functions](https://kotlinlang.org/docs/reference/functions.html)
 
+---
+
 ### 변수 정의
 
 Assign-once(읽기 전용) 지역변수
@@ -78,6 +84,8 @@ fun incrementX() {
 ```
 [Properties And Fields](https://kotlinlang.org/docs/reference/properties.html)
 
+---
+
 ### 주석
 
 코틀린은 자바와 자바스크립트와 같이 end-of-line 과 block 주석을 지원한다.
@@ -91,6 +99,8 @@ fun incrementX() {
 자바와는 달리 코틀린의 블록 주석은 중첩 될 수 있다.
 [Documenting Kotlin Code](https://kotlinlang.org/docs/reference/kotlin-doc.html)
 
+---
+
 ### 스트링 템플릿
 
 ```kotlin
@@ -101,7 +111,7 @@ a = 2
 val s2 = "${s1.replace("is", "was")}, but now is $a"
 ```
 
-
+---
 
 ### 조건부표현식
 
@@ -122,6 +132,8 @@ fun maxOf(a: Int, b: Int) = if (a > b) a else b
 ```
 
 [if-expressions](https://kotlinlang.org/docs/reference/control-flow.html#if-expression)
+
+---
 
 ### `nullable`값과 `null`체크
 
