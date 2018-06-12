@@ -24,3 +24,60 @@ import java.util.*
 fun sum(a: Int, b: Int): Int{
     ;return a + b
 }
+```
+
+리턴타입에 정의된 함수.
+```Kotlin
+fun sum(a: Int, b: Int) = a + 
+```
+
+의미있는 값을 반환하지않는 함수.
+```Kotlin
+fun printSum(a: Int, b: Int): Unit {
+    println("sum of $a and $b is ${a + b}")
+}
+```
+
+`Unit` 리턴타입을 정의하지 않아도 가능하다.
+```Kotlin
+fun printSum(a: Int, b: Int) {
+    println("sum of $a and $b is ${a + b}")
+}
+```
+[Functions](https://kotlinlang.org/docs/reference/functions.html)
+
+###변수 정의
+Assign-once(읽기 전용) 지역변수
+```Kotlin
+val a; Int = 1 //값과 함께 선언
+val b = 2      //Int 타입 정의안함
+val c: Int     //값을 초기화 하지않고 타입만 선언
+c = 3
+```
+
+Mutable 변수
+```Kotlin
+var x = 5 
+x += 1
+```
+
+Top-level 변수
+```Kotlin
+val PI = 3.14
+var x = 0
+fun incrementX() {
+    x += 1
+}
+```
+[Properties And Fields](https://kotlinlang.org/docs/reference/properties.html)
+
+###주석
+코틀린은 자바와 자바스크립트와 같이 end-of-line 과 block 주석을 지원한다.
+```Kotlin
+// This is an end-of-line comment
+
+/* This is a block comment
+   on multiple lines. */
+```
+자바와는 달리 코틀린의 블록 주석은 중첩 될 수 있다.
+[Documenting Kotlin Code](https://kotlinlang.org/docs/reference/kotlin-doc.html)
