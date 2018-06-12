@@ -1,4 +1,4 @@
-﻿---
+---
 title: Kotlin 기본문법
 layout: posts
 tags: Kotlin, Andorid
