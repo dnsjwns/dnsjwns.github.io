@@ -111,9 +111,11 @@ a = 2
 val s2 = "${s1.replace("is", "was")}, but now is $a"
 ```
 
+[String Templates](https://kotlinlang.org/docs/reference/basic-types.html#string-templates)
+
 ---
 
-### 조건부표현식
+### 조건부 표현식
 
 ```kotlin
 fun maxOf(a: Int, b: Int): Int{
@@ -165,3 +167,187 @@ fun printProduct(arg1: String, arg2: String) {
 }
 ```
 
+[Null-safty](https://kotlinlang.org/docs/reference/null-safety.html)
+
+---
+
+### Type check와 automatic cast
+
+`is`연산자는 `if`구문의 인스턴스 타입을 체크한다. 만약 변하지않는 지역변수나 속성이 특정 타입으로 판별되면 따로 선언할 필요가 없이 자동으로 선언된다.
+
+```kotlin
+fun getStringLength(obj: Any): Int? {
+    if (obj is String) {
+        // `obj` is automatically cast to `String` in this branch
+        return obj.length
+    }
+
+    // `obj` is still of type `Any` outside of the type-checked branch
+    return null
+}
+```
+
+```kotlin
+fun getStringLength(obj: Any): Int? {
+    if (obj !is String) return null
+
+    // `obj` is automatically cast to `String` in this branch
+    return obj.length
+}
+```
+
+```kotlin
+fun getStringLength(obj: Any): Int? {
+    // `obj` is automatically cast to `String` on the right-hand side of `&&`
+    if (obj is String && obj.length > 0) {
+        return obj.length
+    }
+
+    return null
+}
+```
+
+[Type Checks and Casts](https://kotlinlang.org/docs/reference/typecasts.html)
+
+---
+
+### for 반복문
+
+```kotlin
+val items = listOf("apple", "banana", "kiwifruit")
+for (item in items) {
+    println(item)
+}
+```
+
+```kotlin
+val items = listOf("apple", "banana", "kiwifruit")
+for (index in items.indices) {
+    println("item at $index is ${items[index]}")
+}
+```
+
+[for 반복문](https://kotlinlang.org/docs/reference/control-flow.html#for-loops)
+
+---
+
+### while 반복문
+
+```kotlin
+val items = listOf("apple", "banana", "kiwifruit")
+var index = 0
+while (index < items.size) {
+    println("item at $index is ${items[index]}")
+    index++
+}
+```
+
+[while 반복문](https://kotlinlang.org/docs/reference/control-flow.html#while-loops)
+
+---
+
+### when 구문
+
+```kotlin
+fun describe(obj: Any): String =
+when (obj) {
+    1          -> "One"
+    "Hello"    -> "Greeting"
+    is Long    -> "Long"
+    !is String -> "Not a string"
+    else       -> "Unknown"
+}
+```
+
+[when 구문](https://kotlinlang.org/docs/reference/control-flow.html#when-expression)
+
+---
+
+### 범위(range)
+
+`if`구문에서 `in`연산자를 이용해  숫자 범위안에 있는지 확인하기
+
+```kotlin
+val x = 10
+val y = 9
+if (x in 1..y+1) {
+    println("fits in range")
+}
+```
+
+`if` 구문에서 범위 밖인지 확인하기
+
+```kotlin
+val list = listOf("a", "b", "c")
+
+if (-1 !in 0..list.lastIndex) {
+    println("-1 is out of range")
+}
+if (list.size !in list.indices) {
+    println("list size is out of valid list indices range too")
+}
+```
+
+범위내 반복
+
+```kotlin
+for (x in 1..5) {
+    print(x)
+}
+```
+
+```kotlin
+for (x in 1..10 step 2) {
+    print(x)
+}
+println()
+for (x in 9 downTo 0 step 3) {
+    print(x)
+}
+```
+
+[Ranges](https://kotlinlang.org/docs/reference/ranges.html)
+
+---
+
+### 콜렉션
+
+콜렉션 반복
+
+```kotlin
+for (item in items) {
+    println(item)
+}
+```
+
+`in`연산자를 사용해 콜렉션 확인
+
+```kotlin
+when {
+    "orange" in items -> println("juicy")
+    "apple" in items -> println("apple is fine too")
+}
+```
+
+`lambda`표현식
+
+```kotlin
+fruits
+.filter { it.startsWith("a") }
+.sortedBy { it }
+.map { it.toUpperCase() }
+.forEach { println(it) }
+```
+
+[Higher-order functions and Lambdas](https://kotlinlang.org/docs/reference/lambdas.html)
+
+---
+
+### 기본 클래스 만들기 와 인스턴스
+
+```kotlin
+val rectangle = Rectangle(5.0, 2.0) //no 'new' keyword required
+val triangle = Triangle(3.0, 4.0, 5.0)
+```
+
+[Class](https://kotlinlang.org/docs/reference/classes.html) [Objects and instances](https://kotlinlang.org/docs/reference/object-declarations.html)
