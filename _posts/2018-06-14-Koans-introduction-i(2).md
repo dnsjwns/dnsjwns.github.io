@@ -324,9 +324,409 @@ when (x) {
 
 ### Objects
 
+#### Object expressions
 
+어떤 타입으로 부터 상속받은 익명의 클래스 객체를 생성하기위해 아래와 같이 쓴다.
+
+```kotlin
+window.addMouseListener(object : MouseAdapter() {
+    override fun mouseClicked(e: MouseEvent) {
+        // ...
+    }
+
+    override fun mouseEntered(e: MouseEvent) {
+        // ...
+    }
+})
+```
+
+수퍼타입에 생성자가 있는경우 적절한 생성자 파라미터를 전달해야한다. 여러개의 수퍼타입은 쉼표로 구분될수 있다.
+
+```kotlin
+open class A(x: Int) {
+    public open val y: Int = x
+}
+
+interface B {...}
+
+val ab: A = object : A(1), B {
+    override val y = 15
+}
+```
+
+수퍼타입이 없는 그냥 객체는 간단히 표현 할 수 있다.
+
+```kotlin
+fun foo() {
+    val adHoc = object {
+        var x: Int = 0
+        var y: Int = 0
+    }
+    print(adHoc.x + adHoc.y)
+}
+```
+
+익명 객체는 `local`이나 `private`선언에서만 타입으로 사용할 수 있다. 익명객체를 `public`함수의 리턴타입 이나 속성으로 사용하는 경우 해당 함수 또는 속성의 실제 타입은 익명 객체의 선언 된 수퍼타입이거나 수퍼타입을 선언 하지않은 경우 `Any`가 되며 익명개체에 추가된 구성원은 접근이 불가하다.
+
+```kotlin
+class C {
+    // Private function, so the return type is the anonymous object type
+    private fun foo() = object {
+        val x: String = "x"
+    }
+
+    // Public function, so the return type is Any
+    fun publicFoo() = object {
+        val x: String = "x"
+    }
+
+    fun bar() {
+        val x1 = foo().x        // Works
+        val x2 = publicFoo().x  // ERROR: Unresolved reference 'x'
+    }
+}
+```
+
+Java의 익명 내부 클래스와 마찬가지로 객체 표현식의 코드는 중괄호로 둘러 싸여진 범위 내의 변수에 접근 가능하다. 
+
+```kotlin
+fun countClicks(window: JComponent) {
+    var clickCount = 0
+    var enterCount = 0
+
+    window.addMouseListener(object : MouseAdapter() {
+        override fun mouseClicked(e: MouseEvent) {
+            clickCount++
+        }
+
+        override fun mouseEntered(e: MouseEvent) {
+            enterCount++
+        }
+    })
+    // ...
+}
+```
+
+#### Object declarations
+
+[Singleton](http://en.wikipedia.org/wiki/Singleton_pattern) 은 여러 경우에 유용하게 쓰이며 코틀린에서는 쉽게 선언 가능하다.
+
+```kotlin
+object DataProviderManager {
+    fun registerDataProvider(provider: DataProvider) {
+        // ...
+    }
+
+    val allDataProviders: Collection<DataProvider>
+        get() = // ...
+}
+```
+
+이것을 객체 선언 이라 부르며 항상 `object` 키워드 다음에 이름을 가진다. 변수 선언과 같이 객체선언은 표현식이 아니며 대입문의 오른쪽 부분에 사용할 수 없다.
+
+객체선언의 초기화는 스레드로부터 안전하다.
+
+객체 참조를위해 이름을 직접 쓴다.
+
+```kotlin
+DataProviderManager.registerDataProvider(...)
+```
+
+객체는 수퍼타입을 가질 수 있다.
+
+```kotlin
+object DefaultListener : MouseAdapter() {
+    override fun mouseClicked(e: MouseEvent) {
+        // ...
+    }
+
+    override fun mouseEntered(e: MouseEvent) {
+        // ...
+    }
+}
+```
+
+주의 : 객체선언은 local 에서 불가하지만 다른 객체 선언 또는 내부클래스가 아닌경우에 중첩 될 수 있다. 
+
+#### Companion Objects
+
+객체는 클래스 내부에 `companion`키워드로 표시 될 수 있다.
+
+```kotlin
+class MyClass {
+    companion object Factory {
+        fun create(): MyClass = MyClass()
+    }
+}
+```
+
+`companion`객체의 멤버는 한정자 없이 간단히 클래스이름 으로 호출 할 수 있다.
+
+```kotlin
+val instance = MyClass.create()
+```
+
+`companion`객체의 이름은 생략 될 수 있으며 이때 이름은 `Companion`으로 사용된다.
+
+```kotlin
+class MyClass {
+    companion object {
+    }
+}
+
+val x = MyClass.Companion
+```
+
+`companion`객체의 멤버가 다른언어의 `static`멤버처럼 보이나 런타임에서 실제 객체의 인스턴스 멤버이다. 예를 들면 인터페이스로 구현할 수 있다.
+
+```kotlin
+interface Factory<T> {
+    fun create(): T
+}
+
+
+class MyClass {
+    companion object : Factory<MyClass> {
+        override fun create(): MyClass = MyClass()
+    }
+}
+```
+
+실제 `static`으로 생성 하고자 할 경우 JVM 에서 @JvmStatic 주석을 사용하면 된다. ( [Java interoperability](https://kotlinlang.org/docs/reference/java-to-kotlin-interop.html#static-fields) 참조 )
+
+#### Semantic difference between object expressions and declarations
+
+객체 표현과 객체 선언 사이에는 중요한 차이가 있다.
+
+- 객체 표현은 사용 되는 곳에서 즉시 실행(초기화)된다.
+- 객체 선언은  처음 접근할때 느리게 초기화 된다.
+- `companion`객체는 대응하는 클래스가 로드 되었을때 초기화되어 Java static initializer의 의미와 일치한다.
 
 ---
 
 ### Extensions
+
+코틀린은 C#과 Gosu와 유사하게 클래스에서 상속이나 데코레이터와 같은 모든 유형의 디자인 패턴을 사용하지 않고도 새로운 기능으로 클래스를 확장 할 수 있다. 이것은 확장 이라는 특별한 선언을 통해 이루어진다. 코틀린은 확장 기능과 확장 속성을 지원한다.
+
+#### Extension Functions
+
+확장 함수를 선언하기위해 이름 앞에 수신자 타입을 선언한다. 아래의 코드는 `swap`함수에 `MutableList<Int>`로 받는것을 추가한 것이다.
+
+```kotlin
+fun MutableList<Int>.swap(index1: Int, index2: Int) {
+    val tmp = this[index1] // 'this' corresponds to the list
+    this[index1] = this[index2]
+    this[index2] = tmp
+}
+```
+
+확장 함수 내의`this`키워드는 수신자 객체( . 이전의 전달되는 것)을 지칭한다. 아래와같이 임의의 `MutableList<Int>`에 대하여  함수를 호출 할 수 있다.
+
+```kotlin
+val l = mutableListOf(1, 2, 3)
+l.swap(0, 2) // 'this' inside 'swap()' will hold the value of 'l'
+```
+
+이 함수는 임의의 `MutableList<T>`에 대하여 의미가 있으며 이것을 `generic`으로 만들 수 있다.
+
+```kotlin
+fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
+    val tmp = this[index1] // 'this' corresponds to the list
+    this[index1] = this[index2]
+    this[index2] = tmp
+}
+```
+
+`generic`타입 파라미터 선언은 함수 이름 이전에 해야한다. ([Generic functions](https://kotlinlang.org/docs/reference/generics.html))
+
+#### Extensions are resolved statically
+
+확장은 실제로 확장한 클래스를 수정하지 않는다. 확장은 클래스에 새 멤버를 삽입하지 않고 이 유형의 변수에 점  표기법으로 호출 할 수있는 새함수를 만든다.
+
+호출되는 확장 함수는 런타임에 해당 표현식을 평가 한 결과의 타입이 아니라 함수가 호출된 표현식의 타입에 따라 결정 된다.
+
+```kotlin
+open class C
+
+class D: C()
+
+fun C.foo() = "c"
+
+fun D.foo() = "d"
+
+fun printFoo(c: C) {
+    println(c.foo())
+}
+
+printFoo(D())
+```
+
+위 코드는 확장 함수가 `C`클래스를 지칭하는 `c`파라미터 에만 의존하기 때문에 "c"를 인쇄 할것이다.
+
+클래스에 멤버 함수가 있고 동일한 수신자 타입 동일한 이름 및 주어진 인수에 적용 가능한 확장 함수가 정의된 경우 항상 멤버가 우선된다.
+
+```kotlin
+class C {
+    fun foo() { println("member") }
+}
+
+fun C.foo() { println("extension") }
+```
+
+`c.foo()`를 호출하면 "extension"이 아닌 "member"를 인쇄한다.
+
+하지만 확장 함수가 이름은 같지만 서명이 다른 멤버 함수를 오버로드 하는것도 가능하다.
+
+```kotlin
+class C {
+    fun foo() { println("member") }
+}
+
+fun C.foo(i: Int) { println("extension") }
+```
+
+`C().foo(1)`을 호출하면 "extension"을 인쇄한다.
+
+#### Nullable Receiver
+
+확장은 `nullable`수신자 타입으로 정의가 가능하다. 확장에서 값이 `null`인 경우에도 호출 가능하며 `this == null`으로 확인 가능하다. 이런 경우 확장 함수 내부에서 검사를 하기 때문에 `toString()`함수를 검사 없이 호출이 가능하다.
+
+```kotlin
+fun Any?.toString(): String {
+    if (this == null) return "null"
+    // after the null check, 'this' is autocast to a non-null type, so the toString() below
+    // resolves to the member function of the Any class
+    return toString()
+}
+```
+
+#### Extension Properties
+
+함수와 비슷하게 코틀린은 확장 속성을 지원한다.
+
+```kotlin
+val <T> List<T>.lastIndex: Int
+    get() = size - 1
+```
+
+확장 기능은 실제로 멤버를 클래스에 삽입 하지 않으므로 확장 속성에 대한 [backing field](https://kotlinlang.org/docs/reference/properties.html#backing-fields)가 있는 효율적인 방법은 없다. 이것이 초기화가 확장 속성에 허용되지 않는 이유다. getter와 setter를 명시적으로 정의하는것으로 초기화 할 수 있다.
+
+```kotlin
+val Foo.bar = 1 // error: initializers are not allowed for extension properties
+```
+
+#### Companion Object Extensions
+
+클래스가 [`companion`객체](https://kotlinlang.org/docs/reference/object-declarations.html#companion-objects)로 정의 되었을때에도 확장 함수와 속성을 정의 가능하다.
+
+```kotlin
+class MyClass {
+    companion object { }  // will be called "Companion"
+}
+
+fun MyClass.Companion.foo() {
+    // ...
+}
+```
+
+`companion`객체의 정규맴버와 같이 클래스 이름으로 한정자 없이 호출 가능하다.
+
+```kotlin
+MyClass.foo()
+```
+
+#### Scope of Extensions
+
+대부분의 경우 확장은 최상위 레벨에서 선언된다(즉 패키지 바로아래).
+
+```kotlin
+package foo.bar
+ 
+fun Baz.goo() { ... } 
+```
+
+패키지 밖에서 선언된 확장을 쓰기 위해서는 호출 범위를 `import` 해야 한다.
+
+```kotlin
+package com.example.usage
+
+import foo.bar.goo // importing all extensions by name "goo"
+                   // or
+import foo.bar.*   // importing everything from "foo.bar"
+
+fun usage(baz: Baz) {
+    baz.goo()
+}
+```
+
+#### Declaring Extensions as Members
+
+클래스 안에서 다른 클래스를 확장 선언 할 수 있다. 확장 안에서 다수의 암시적 수신자가 있을 수 있으며 이 수신자는 한정자 없이 접근이 가능하다. 확장이 선언 된 클래스의 인스턴스를 디스패치 수신자 라고 한다. 확장 메소드의 수신자 타입의 인스턴스를 확장 수신자 라고 한다.
+
+```kotlin
+class D {
+    fun bar() { ... }
+}
+
+class C {
+    fun baz() { ... }
+
+    fun D.foo() {
+        bar()   // calls D.bar
+        baz()   // calls C.baz
+    }
+
+    fun caller(d: D) {
+        d.foo()   // call the extension function
+    }
+}
+```
+
+디스패치 수신자와 확장 수신자간의 이름이 겹칠경우 확장 수신자가 우선된다. 디스패치 수신자에 참조하기 위해서는 [qualified `this`문법](https://kotlinlang.org/docs/reference/this-expressions.html#qualified)을 써야한다.
+
+```kotlin
+class C {
+    fun D.foo() {
+        toString()         // calls D.toString()
+        this@C.toString()  // calls C.toString()
+    }
+```
+
+확장 선언된 멤버는 `open`이나 오버라이딩된 서브클래스로 선언이 가능하다. 이것은 함수를 디스패치하는 것에 대해서 디스패치 수신자 타입과 관련하여 가상의 의미를 가지고 확장 수신자 타입에 관련해서는 정적의 의미를 가진다.
+
+```kotlin
+open class D {
+}
+
+class D1 : D() {
+}
+
+open class C {
+    open fun D.foo() {
+        println("D.foo in C")
+    }
+
+    open fun D1.foo() {
+        println("D1.foo in C")
+    }
+
+    fun caller(d: D) {
+        d.foo()   // call the extension function
+    }
+}
+
+class C1 : C() {
+    override fun D.foo() {
+        println("D.foo in C1")
+    }
+
+    override fun D1.foo() {
+        println("D1.foo in C1")
+    }
+}
+
+C().caller(D())   // prints "D.foo in C"
+C1().caller(D())  // prints "D.foo in C1" - dispatch receiver is resolved virtually
+C().caller(D1())  // prints "D.foo in C" - extension receiver is resolved statically
+```
 
