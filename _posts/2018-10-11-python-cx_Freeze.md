@@ -22,14 +22,14 @@ python은 유용한 도구지만 다른이들에게 배포하는 경우에는 �
 `setup.py`를 작성하여 빌드를 해보자
 
 ```python
-import os
 import sys
-import win32api
 from cx_Freeze import setup, Executable
 
 build_exe_options = dict(
-	include = []
-    include_files = []
+    packages = ["os"],
+    excludes =["tkinter"],
+    include_files = [],
+    include_msvcr = []
 	)
 
 base = None
@@ -45,5 +45,17 @@ setup(
     executables = [Executable("omg.py", base = base)]
 	)
 ```
+
+
+
+``` bash
+python setup.py build
+```
+
+
+
+대부분의 의존성 라이브러리는 `lib`폴더에 포함된다. python36.dll 같은 라이브러리가 빠져 있는 경우가 있는데 이때는 `include_files` 에 포함 시켜주자.
+
+
 
 - https://cx-freeze.readthedocs.io/en/latest/distutils.html
